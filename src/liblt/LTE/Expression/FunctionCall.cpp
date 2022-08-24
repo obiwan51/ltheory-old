@@ -167,7 +167,7 @@ Function OverloadResolution(
 
   if (matches.isEmpty())
   {
-#if 1
+#if 0
     String sig = "(";
     for (size_t i = 0; i < types.size(); ++i)
     {
@@ -194,18 +194,16 @@ Function OverloadResolution(
       return matches[0].fn;
 
 #if 0
-      Log_Error(Stringize()
-        | "Ambiguous function call to " | name | " arguments are:");
-      for (size_t i = 0; i < types.size(); ++i)
-        Log_Error(Stringize() | "  " | types[i]->GetAliasName());
+    Log_Error(Stringize() | "Ambiguous function call to " | name | " arguments are:");
+    for (size_t i = 0; i < types.size(); ++i)
+      Log_Error(Stringize() | "  " | types[i]->GetAliasName());
 
-      Log_Error("Matching candidates are:");
-      for (size_t i = 0; i < matches.size(); ++i) {
-        FunctionMatch const& match = matches[i];
-        Log_Error(Stringize()
-          | "(With " | match.order | " implicit conversions) "
-          | match.fn->GetSignature());
-      }
+    Log_Error("Matching candidates are:");
+    for (size_t i = 0; i < matches.size(); ++i)
+    {
+      FunctionMatch const &match = matches[i];
+      Log_Error(Stringize() | "(With " | match.order | " implicit conversions) " | match.fn->GetSignature());
+    }
 #endif
     return nullptr;
   }

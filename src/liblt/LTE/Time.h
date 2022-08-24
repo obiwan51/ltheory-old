@@ -6,14 +6,16 @@
 #include "DeclareFunction.h"
 
 AutoClass(Time,
-  uint, second,
-  uint, minute,
-  uint, hour,
-  uint, day,
-  uint, month,
-  uint, year)
-  Time() {}
-};
+          uint, second,
+          uint, minute,
+          uint, hour,
+          uint, day,
+          uint, month,
+          uint, year,
+          uint, epoch)
+    Time() {}
+}
+;
 
 DeclareFunctionNoParams(Time_Current, Time)
 

@@ -11,7 +11,7 @@ type BuyWindow
 
   function List CreateChildren (Widget self)
     var l List
-    var c (switch (self.focusMouse (Vec3 0.0)) (otherwise (Vec3 0.0)))
+    var c (switch (self.focusMouse (Vec3 0.0)) (otherwise (Vec3 1.0)))
     l +=
       Components:AlignCenter
         Widgets:Text Fonts:Default "CONFIRM" 16.0 c

@@ -7,90 +7,106 @@
 #include "LTE/Script.h"
 #include "LTE/StringList.h"
 
-namespace {
+namespace
+{
   AutoClassDerived(ExpressionConstructorEmpty, ExpressionT,
-    Type, type)
-    DERIVED_TYPE_EX(ExpressionConstructorEmpty)
-    POOLED_TYPE
-    
-    ExpressionConstructorEmpty() {}
+                   Type, type)
+      DERIVED_TYPE_EX(ExpressionConstructorEmpty)
+          POOLED_TYPE
 
-    String Emit(Vector<String>& context) const {
-      return Stringize() | type->name | "()";
-    }
+      ExpressionConstructorEmpty()
+  {
+  }
 
-    void Evaluate(void* returnValue, Environment& env) const {}
+  String Emit(Vector<String> &context) const
+  {
+    return Stringize() | type->name | "()";
+  }
 
-    Type GetType() const {
-      return type;
-    }
+  void Evaluate(void *returnValue, Environment &env) const {}
 
-    bool IsConstant(CompileEnvironment& env) const {
-      return true;
-    }
-  };
+  Type GetType() const
+  {
+    return type;
+  }
 
-  AutoClassDerived(ExpressionConstructorDefault, ExpressionT,
-    Type, type,
-    Array<Expression>, expressions)
+  bool IsConstant(CompileEnvironment &env) const
+  {
+    return true;
+  }
+};
+
+AutoClassDerived(ExpressionConstructorDefault, ExpressionT,
+                 Type, type,
+                 Array<Expression>, expressions)
     DERIVED_TYPE_EX(ExpressionConstructorDefault)
-    POOLED_TYPE
-    
-    ExpressionConstructorDefault() {}
+        POOLED_TYPE
 
-    ExpressionConstructorDefault(
-        Type const& type,
-        Vector<Expression> const& expressions) :
-      type(type)
-    {
-      this->expressions.resize(expressions.size());
-      for (size_t i = 0; i < expressions.size(); ++i)
-        this->expressions[i] = expressions[i];
-    }
-
-    void Evaluate(void* returnValue, Environment& env) const {
-      Vector<Field> const& fields = type->GetFields();
-      for (size_t i = 0; i < expressions.size(); ++i)
-        expressions[i]->Evaluate((char*)returnValue + fields[i].offset, env);
-    }
-
-    Type GetType() const {
-      return type;
-    }
-
-    bool IsConstant(CompileEnvironment& env) const {
-      for (size_t i = 0; i < expressions.size(); ++i)
-        if (!expressions[i]->IsConstant(env))
-          return false;
-      return true;
-    }
-  };
+    ExpressionConstructorDefault()
+{
 }
 
-namespace LTE {
+ExpressionConstructorDefault(
+    Type const &type,
+    Vector<Expression> const &expressions) : type(type)
+{
+  this->expressions.resize(expressions.size());
+  for (size_t i = 0; i < expressions.size(); ++i)
+    this->expressions[i] = expressions[i];
+}
+
+void Evaluate(void *returnValue, Environment &env) const
+{
+  Vector<Field> const &fields = type->GetFields();
+  for (size_t i = 0; i < expressions.size(); ++i)
+    expressions[i]->Evaluate((char *)returnValue + fields[i].offset, env);
+}
+
+Type GetType() const
+{
+  return type;
+}
+
+bool IsConstant(CompileEnvironment &env) const
+{
+  for (size_t i = 0; i < expressions.size(); ++i)
+    if (!expressions[i]->IsConstant(env))
+      return false;
+  return true;
+}
+}
+;
+}
+
+namespace LTE
+{
   Expression Expression_Constructor(
-    StringList const& list,
-    CompileEnvironment& env)
+      StringList const &list,
+      CompileEnvironment &env)
   {
     Type type;
     StringList args;
 
-    if (list->IsAtom()) {
+    if (list->IsAtom())
+    {
       type = env.script->ResolveType(list);
       args = nullptr;
-    } else {
+    }
+    else
+    {
       type = env.script->ResolveType(list->Get(0));
       args = list;
-      if (!type) {
+      if (!type)
+      {
         type = env.script->ResolveType(list);
         args = nullptr;
       }
     }
 
-    if (!type) {
+    if (!type)
+    {
       if (env.detail)
-        Log_Message(Stringize()
-          | "constructor -- could not resolve type '" | list->GetString() | "'");
+        Log_Message(Stringize() | "constructor -- could not resolve type '" | list->GetString() | "'");
       return nullptr;
     }
 
@@ -109,9 +125,11 @@ namespace LTE {
       if (!initializers[i])
         emptyInitializers++;
 
-    if (args->GetSize() == emptyInitializers + 1) {
+    if (args->GetSize() == emptyInitializers + 1)
+    {
       size_t fieldIndex = 0;
-      for (size_t i = 1; i < args->GetSize(); ++i) {
+      for (size_t i = 1; i < args->GetSize(); ++i)
+      {
         while (initializers[fieldIndex] && fieldIndex < initializers.size())
           fieldIndex++;
 

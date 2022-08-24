@@ -1,4 +1,4 @@
-function Vec3 WarpNodeScale () (Vec3 100)
+function Vec3 WarpNodeScale () (Vec3 100 0 0)
 function Float WarpNodeSpacing () 15000.0
 
 function Void BuildRail (Object self Position p1 Position p2)
@@ -9,9 +9,10 @@ function Void BuildRail (Object self Position p1 Position p2)
     var t i / (nodes - 1)
     var p (Mix p1 p2 t)
     var node Object_WarpNode
+    var look (Normalize p2 - p1)
     node.SetPos p
     node.SetScale WarpNodeScale
-    node.SetLook (Vec3 p1.x p1.y p1.z)
+    node.SetLook (Vec3 look.x look.y look.z)
     self.AddInterior node
 
     if prevNode.IsNotNull

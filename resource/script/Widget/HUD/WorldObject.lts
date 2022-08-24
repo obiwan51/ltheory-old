@@ -71,7 +71,7 @@ type WorldObjectMenu
             child.Delete
             child = Widget
           otherwise
-            child = (Widget/Object/Overview:Create player object)
+            child = (Widget/ObjectInfo:Create player object)
             self.SendUp (Messages:MessageAddWidget child)
             
 

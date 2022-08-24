@@ -30,15 +30,16 @@ type WidgetLogEntry
 
 type WidgetLog
   Player player
-
+  # var time Time_Current
   function List CreateChildren (Widget self)
     var l List
     var i 0
-    for it player.GetLog it.HasMore it.Advance
-      l +=
-        ListH 8
-          Custom Widget
-            WidgetLogEntry i it.Get.message
+    for it player.GetLog it.HasMore it.Advance      
+      # if it.Get.time + 5000000 < time.epoch
+        l +=
+          ListH 8
+            Custom Widget
+              WidgetLogEntry i it.Get.message
       i.++
     l
 

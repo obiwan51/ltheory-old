@@ -113,9 +113,9 @@ void GatherSignalsObject(
     Object const &object)
 {
   Signature s = object->GetSignature();
-  Log_Warning(Stringize() | "Signature: " | s);
   if (s.amplitude > 0)
   {
+    // Log_Warning(Stringize() | "Signature: " | s);
     V3 toObject = object->GetPos() - pos;
     float angle = Degrees(Angle(toObject, look));
     float dist = Length(toObject) / kDistanceScale;

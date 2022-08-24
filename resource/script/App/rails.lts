@@ -60,7 +60,6 @@ type App
         0.0
         0.0
     # system.AddInterior zone
-
     var warpNodeScale (Vec3 100)
     var prevNode Object
     var prevPos (Vec3 0 0 2000) + kOrigin
