@@ -5,11 +5,18 @@ type App
   Object universe
   Player player
   Camera camera
+  Interface ui
+  Interface gameView
+
 
   function Void Create (Widget self)
     # Create the camera
     camera = Camera_Create
     camera.Push
+
+    # Create the interfaces
+    ui = (Interface_Create "UI")
+    gameView = (Interface_Create "Game View")
 
     # Create the universe
     universe = (Object_Universe UniverseSeed 0)
@@ -82,6 +89,9 @@ type App
     var dt (Min 0.1 FrameTimer_Get)
     if Key_H.Down dt *= 20.0
     container.Update dt
+    ui.Update
+    gameView.Update
+    gameView.Draw
 
 function Data Main ()
   widget:Create

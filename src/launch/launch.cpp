@@ -17,7 +17,8 @@
 #include "LTE/Timer.h"
 #endif
 
-struct Launcher : public Program {
+struct Launcher : public Program
+{
   String appName;
   ScriptFunction initialize;
   ScriptFunction update;
@@ -25,19 +26,22 @@ struct Launcher : public Program {
   Module physicsEngine;
   Module soundEngine;
 
-  Launcher(String const& appName) : appName(appName) {
+  Launcher(String const &appName) : appName(appName)
+  {
     if (!OS_IsDir("resource"))
       OS_ChangeDir("../");
-    window = Window_Create("App Launcher", V2U(1920, 1080), true, false);
+    window = Window_Create("Limit Theory", V2U(1920, 1080), false, true);
     window->SetSync(false);
     Renderer_Initialize();
   }
 
-  void OnInitialize() {
+  void OnInitialize()
+  {
     Launch();
   }
 
-  void Launch() {
+  void Launch()
+  {
     physicsEngine = nullptr;
     soundEngine = nullptr;
     physicsEngine = CreatePhysicsEngine();
@@ -53,7 +57,8 @@ struct Launcher : public Program {
     dbg | "LTSL Compile Time: " | timer.GetElapsed() | endl;
 #endif
 
-    if (!main) {
+    if (!main)
+    {
       printf("ERROR: Launcher failed to load script %s\n", appName.c_str());
       deleted = true;
       return;
@@ -64,7 +69,7 @@ struct Launcher : public Program {
               system, Type_Get<T> returns different static storage in the exe
               vs the dll, so type equality comparisons fail when they shouldn't.
               I am not going to fix this right now. */
-    ScriptType app = *(ScriptType*)main->returnType->GetAux().data;
+    ScriptType app = *(ScriptType *)main->returnType->GetAux().data;
     initialize = app->GetFunction("Initialize");
     update = app->GetFunction("Update");
     instance.Construct(app->type);
@@ -76,13 +81,15 @@ struct Launcher : public Program {
       deleted = true;
   }
 
-  void OnUpdate() {
+  void OnUpdate()
+  {
     if (Keyboard_Pressed(Key_F1))
       SaveScreenshot();
     if (Keyboard_Pressed(Key_F2))
       Profiler_Auto(1.0f);
 
-    if (Keyboard_Pressed(Key_W) && Keyboard_Control()) {
+    if (Keyboard_Pressed(Key_W) && Keyboard_Control())
+    {
       deleted = true;
       instance.Clear();
       return;
@@ -103,12 +110,15 @@ struct Launcher : public Program {
       soundEngine->Update();
   }
 
-  void SaveScreenshot() {
+  void SaveScreenshot()
+  {
     String prefix = OS_GetUserDataPath() + "screenshot/";
     OS_CreatePath(prefix);
-    for (uint i = 0;; ++i) {
+    for (uint i = 0;; ++i)
+    {
       String path = prefix + ToString(i) + ".png";
-      if (!OS_FileExists(path)) {
+      if (!OS_FileExists(path))
+      {
         Texture_ScreenCapture()->SaveTo(path);
         return;
       }
@@ -116,10 +126,19 @@ struct Launcher : public Program {
   }
 };
 
-int main(int argc, char const* argv[]) {
-  if (argc != 2) {
-    printf("ERROR: Launcher expects one argument (application name)\n");
-    return 0;
+int main(int argc, char const *argv[])
+{
+
+  String appName = "";
+  if (argc != 2)
+  {
+    // printf("ERROR: Launcher expects one argument (application name)\n");
+    // return 0;
+    appName = "ltheory";
+  }
+  else
+  {
+    appName = argv[1];
   }
 
   Launcher(argv[1]).Execute();
@@ -128,8 +147,8 @@ int main(int argc, char const* argv[]) {
 
 #if 0
 #ifdef LIBLT_WINDOWS
-  #pragma comment(linker, "/SUBSYSTEM:windows")
-  #include <windows.h>
+#pragma comment(linker, "/SUBSYSTEM:windows")
+#include <windows.h>
   int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, PSTR cmd, int show) {
     char const* argv[] = { "program" };
     return main(0, argv);

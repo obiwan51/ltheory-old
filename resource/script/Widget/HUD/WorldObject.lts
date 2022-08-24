@@ -33,6 +33,7 @@ function Widget CreateMenuOption (Widget widget String name Icon icon Data messa
 type WorldObjectMenu
   Player player
   Object object
+  Widget child Widget
 
   function List CreateChildren (Widget self)
     var l List
@@ -52,7 +53,7 @@ type WorldObjectMenu
     l += (CreateMenuOption self "Target" Icons:Target MessageTarget)
     l
 
-  function Void Receive (Widget self Data data)
+  function Void Receive (Widget self Data data)    
     switch
       (data.IsType "MessageComm")
         ref msg (cast MessageComm data)
@@ -65,14 +66,24 @@ type WorldObjectMenu
           object.GetPos - (1.5 * object.GetRadius + 1000.0) * player.GetPiloting.GetLook
 
       (data.IsType "MessageInfo")
-        # self.SendUp
-          Messages:MessageAddWidget
-            ObjectInfo:CreateWindow player object
+        switch
+          child.HasParent
+            child.Delete
+            child = Widget
+          otherwise
+            child = (Widget/Object/Overview:Create player object)
+            self.SendUp (Messages:MessageAddWidget child)
+            
 
       (data.IsType "MessageOwner")
-        # self.SendUp
-          Messages:MessageAddWidget
-            ObjectInfo:CreateWindow player object.GetOwner
+        # switch
+        #   child.HasParent
+        #     child.Delete
+        #     child = Widget
+        #   otherwise
+        #     child = (Widget/ObjectInfo:CreateWindow player object.GetOwner)
+        #     self.SendUp (Messages:MessageAddWidget child)
+            
 
       (data.IsType "MessageTarget")
         switch
@@ -84,9 +95,15 @@ type WorldObjectMenu
             Sound_Play "ui/targetacquired.ogg" 0.2
 
       (data.IsType "MessageTrade")
-        self.SendUp
-          Messages:MessageAddWidget
-            Widget/Object/Market:Create player object
+        switch
+          child.HasParent
+            child.Delete
+            child = Widget
+          otherwise
+            child = (Widget/Object/Market:Create player object)
+            self.SendUp (Messages:MessageAddWidget child)
+        
+            
 
 type WidgetObject
   Player player

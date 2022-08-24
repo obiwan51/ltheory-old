@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\resource",
+    "\\resource\\script",
+    "\\resource\\script\\App",
+    "\\src",
+    "\\src\\launch",
+    "\\src\\old\\launcher",
+    "\\src\\old\\ltconsole",
+    "\\src\\old\\ltheory"
+  ],
+  "SelectedNode": "\\src\\launch\\launch.cpp",
+  "PreviewInSolutionExplorer": false
+}

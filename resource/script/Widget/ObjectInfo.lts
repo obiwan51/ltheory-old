@@ -117,7 +117,7 @@ type Ribbon
     l
 
   function Void PreDraw (Widget self)
-    # DrawPanel self.pos self.size 0.1 0.3 1 0
+    DrawPanel self.pos self.size 0.1 0.3 1 0
 
   function Void Receive (Widget self Data data)
     if (data.IsType "TabSelect")

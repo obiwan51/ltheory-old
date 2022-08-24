@@ -8,6 +8,9 @@ type MessageSetStates
   Bool boosting
   Bool firing
 
+type MessageMenuOpen
+  Bool menuOpen
+
 type MessageTarget
   Object object
   Vec3d pos
@@ -31,6 +34,7 @@ type HandlingScript
   Bool firing false
   RNG rng (RNG_MTG 0)
   Int targetIndex 0
+  Bool menuOpen false
 
   function Bool Update (Object self)
     var dt FrameTimer_Get
@@ -46,10 +50,10 @@ type HandlingScript
     desc "Update State"
       distanceTarget -= 0.5 * Mouse_GetScrollDelta
       distanceTarget = (Clamp distanceTarget 1.0 8.0)
-      distance = (Mix distance distanceTarget (1.0 - (ExpDecay dt 0.1)))
-      noise = (Mix noise noiseTarget (1.0 - (ExpDecay dt 2.0)))
-      up = (Normalize (Mix up upTarget 1.0 - (ExpDecay dt 0.05)))
-      look = (Normalize (Mix look lookTarget 1.0 - (ExpDecay dt 0.5)))
+      distance = (Mix distance distanceTarget (1.0))
+      noise = (Mix noise noiseTarget (1.0))
+      up = (Normalize (Mix up upTarget 1.0))
+      look = (Normalize (Mix look lookTarget 1.0))
 
     self.Broadcast (MessageThrustLinear thrust)
 
@@ -62,8 +66,8 @@ type HandlingScript
       var torque (transform.GetInverseDir (Cross transform.look look))
       torque.z = (Dot transform.look (Cross transform.up up))
       torque -= self.GetVelocityAngular / 2.0
-      # self.Broadcast (MessageThrustAngular torque torque.Length)
-      self.SetLook (Mix self.GetLook look 1.0 - (ExpDecay dt 0.5))
+      self.Broadcast (MessageThrustAngular torque torque.Length)
+      self.SetLook (Mix self.GetLook look 1.0 - (ExpDecay dt 0.051))
 
     desc "Update Camera"
       var cam Camera_Get
@@ -78,8 +82,6 @@ type HandlingScript
           pos += radius * look
           lookAt = pos + (1000.0 * look + noise)
 
-          cam.SetRigidity 10000000.0
-
         otherwise
           var t (Transform_LookUp (Vec3d 0 0 0) look up)
           var r (Dot t.right target.GetLook)
@@ -88,18 +90,17 @@ type HandlingScript
           var dir look + r * t.right
           dir = (Normalize dir)
 
-          #
-            var offset 4.0 * (target.GetLook - look)
-            var offsetLength offset.Length
-            offset = 0.25 * (1.0 - (ExpDecay offsetLength 0.5)) * offset.Normalize
-            pos -= radius * (Mix target.GetLook look (1.0 - (ExpDecay offsetLength 1.0)))
-            pos -= radius * offset
+          # var offset 4.0 * (target.GetLook - look)
+          # var offsetLength offset.Length
+          # offset = 0.25 * (1.0 - (ExpDecay offsetLength 0.5)) * offset.Normalize
+          # pos -= radius * (Mix target.GetLook look (1.0 - (ExpDecay offsetLength 1.0)))
+          # pos -= radius * offset
 
           pos -= radius * look
           pos += 0.2 * radius * up
 
           lookAt = target.GetPos + (1000.0 * look + noise)
-          cam.SetRigidity 10000000.0
+          # cam.SetRigidity 10000000.0
 
       cam.SetRelativePos pos
       cam.SetRelativeUp up
@@ -164,6 +165,10 @@ type HandlingScript
         ref msg (cast MessageSetStates data)
         boosting = msg.boosting
         firing = msg.firing
+
+      # (data.IsType "MessageMenuOpen")
+      #   ref msg (cast MessageMenuOpen data)
+      #   menuOpen = msg.menuOpen
 
 type Handler
   Object object
@@ -230,9 +235,9 @@ type Handler
 
         if self.focusKey
           if Key_Q.Down
-            rotation.z += 2.0
+            rotation.z += 1.0
           if Key_E.Down
-            rotation.z -= 2.0
+            rotation.z -= 1.0
 
         object.Broadcast (MessageCamRotation rotation)
 
@@ -247,6 +252,10 @@ type Handler
           thrust.z = 1.0
         if Key_S.Down
           thrust.z = -1.0
+        if Key_R.Down
+          thrust.y = 1.0
+        if Key_C.Down
+          thrust.y = -1.0
 
       object.Broadcast (MessageCamThrust thrust)
 
@@ -268,7 +277,7 @@ type Handler
           boosting = true
 
       if self.focusMouse
-        if Mouse_RightDown
+        if Mouse_LeftDown
           firing = true
 
       object.Broadcast (MessageSetStates boosting firing)

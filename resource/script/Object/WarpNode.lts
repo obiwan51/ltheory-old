@@ -11,7 +11,7 @@ function Void BuildRail (Object self Position p1 Position p2)
     var node Object_WarpNode
     node.SetPos p
     node.SetScale WarpNodeScale
-    node.SetLook (Normalize p2 - p1)
+    node.SetLook (Vec3 p1.x p1.y p1.z)
     self.AddInterior node
 
     if prevNode.IsNotNull

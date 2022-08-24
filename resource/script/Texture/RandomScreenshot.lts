@@ -1,5 +1,5 @@
 function Texture Get ()
-  var path "/home/josh/Dropbox/lt/screenshot"
+  var path "D:/lt"
   while path.IsDirectory
     path += "/"
     var contents path.ListDir

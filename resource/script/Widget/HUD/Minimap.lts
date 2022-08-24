@@ -44,7 +44,7 @@ type Minimap
                 otherwise
                   Colors:Primary
             Draw (Glyph_Circle 0 1 1 1) self.pos + dir * self.size 16.0 2.0 * color 1.0
-            # Draw object.GetIcon self.pos + dir * self.size 10.0 color 1.0
+            Draw object.GetIcon self.pos + dir * self.size 10.0 color 1.0
 
     var radius 0.5 * (Min self.size.x self.size.y)
     for i 0 i < 8 i.++

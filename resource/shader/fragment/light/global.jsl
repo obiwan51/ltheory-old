@@ -34,6 +34,7 @@ void main() {
     light += 8.0 * l;
     light += 8.0 * env;
 #endif
+    light += 0.1;
   }
 
   /* Ice. */

@@ -17,6 +17,9 @@ type App
         ListV 8
           Custom Widget
             Selector
+
+    l += Widget/DevPanel/Apps:Create
+    
     l
 
   function Void PreDraw (Widget self)
@@ -26,6 +29,7 @@ type App
   function Void PostDraw (Widget self)
     Draw Icon/Cursors:Pointer Cursor_Get 12 4.0 * Colors:Primary 0.3
     Widget/Dev/FrameInfo:Draw self
+    
 
 function Data Main ()
   widget:Create

@@ -30,7 +30,7 @@ type WidgetScanner
       Draw (Glyph_Box 0 1 1 1) 0.5 * (p1 + p2) (Vec2 0.45 * self.size.x / (cast Float output.Size - 1) 0.5 * (Abs p2.y - p1.y)) color 0.05
       if i > 0
         Draw (Glyph_Line last p2 1 1) 0 1 color 0.5
-      # Draw (Glyph_Circle 0 1 1 1) p2 16 color 1.0
+        Draw (Glyph_Circle 0 1 1 1) p2 16 color 1.0
       last = p2
 
     var font Fonts:Subheading

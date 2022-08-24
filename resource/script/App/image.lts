@@ -8,7 +8,7 @@ type App
             ?
               false (Texture_LoadFrom (Location_File "1.png"))
               true
-                Texture_LoadFrom (Location_File "data/screenshot/29.png")
+                Texture_LoadFrom (Location_File "D:/lt/splash.png")
               otherwise (Texture/RandomScreenshot:Get)
             "image.png"
     l

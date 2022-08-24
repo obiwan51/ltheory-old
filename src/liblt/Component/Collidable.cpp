@@ -16,27 +16,28 @@
 const double kCollisionDamageCoefficient = 1.0 / 1000.0;
 const double kResolutionCoefficient = 1.5;
 
-namespace {
+namespace
+{
   void ResolveCollision(
-    ObjectT* self,
-    ObjectT* othr,
-    V3 const& normal)
+      ObjectT *self,
+      ObjectT *othr,
+      V3 const &normal)
   {
-    ComponentMotion* motion = self->GetMotion();
+    ComponentMotion *motion = self->GetMotion();
     double selfMass = (double)self->GetMass();
     double othrMass = (double)othr->GetMass();
     V3 selfVelocity = self->GetVelocity();
     V3 othrVelocity = othr->GetVelocity();
 
     double totalEnergy =
-      selfMass * LengthSquared(selfVelocity) * Saturate( Dot(Normalize(selfVelocity), normal)) +
-      othrMass * LengthSquared(othrVelocity) * Saturate(-Dot(Normalize(othrVelocity), normal));
-    
+        selfMass * LengthSquared(selfVelocity) * Saturate(Dot(Normalize(selfVelocity), normal)) +
+        othrMass * LengthSquared(othrVelocity) * Saturate(-Dot(Normalize(othrVelocity), normal));
+
     double othrMassFraction = othrMass / (selfMass + othrMass);
     double damage = kCollisionDamageCoefficient * totalEnergy * othrMassFraction;
 
     /* TEMPCHANGE Don't apply collision damage to AI pilots. */
-    Player const& p = self->GetOwner();
+    Player const &p = self->GetOwner();
 
     /* CRITICAL Don't apply any collision damage...ever ;) */
     if (false && (!p || p->IsHuman()))
@@ -44,33 +45,34 @@ namespace {
 
     if (motion)
       motion->velocity -=
-        (float)(kResolutionCoefficient * othrMassFraction) *
-        Max(0.f, Dot(motion->velocity, normal)) * normal;
+          (float)(kResolutionCoefficient * othrMassFraction) *
+          Max(0.f, Dot(motion->velocity, normal)) * normal;
   }
 }
 
-ComponentCollidable::ComponentCollidable() :
-  passive(true),
-  solid(true)
-  {}
+ComponentCollidable::ComponentCollidable() : passive(true),
+                                             solid(true)
+{
+}
 
-void ComponentCollidable::CheckCollisions(ObjectT* self, UpdateState& state) {
+void ComponentCollidable::CheckCollisions(ObjectT *self, UpdateState &state)
+{
   AUTO_FRAME;
   if (!state.hasFocus)
     return;
 
   /* CRITICAL. Never check collisions for non-player objects. */
-  Player const& owner = self->GetOwner();
+  Player const &owner = self->GetOwner();
   if (!owner || !owner->IsHuman())
     return;
 
   if (!self->CanMove())
     return;
 
-  ComponentBoundingBox& bb = *self->GetBoundingBox();
-  ObjectT* context = self->GetContainer();
+  ComponentBoundingBox &bb = *self->GetBoundingBox();
+  ObjectT *context = self->GetContainer();
 
-  ComponentMotion* myMotion = self->GetMotion();
+  ComponentMotion *myMotion = self->GetMotion();
   float mySpeed = myMotion ? myMotion->speed : 0.f;
 
   /* We can use the version to detect whether the BB has been initialized. */
@@ -78,25 +80,26 @@ void ComponentCollidable::CheckCollisions(ObjectT* self, UpdateState& state) {
     return;
 
   /* Get a list of nearby objects. */
-  static Vector<ObjectT*> nearbyObjects;
+  static Vector<ObjectT *> nearbyObjects;
   nearbyObjects.clear();
   nearbyObjects.reserve(100);
-  Bound3D const& myBound = self->GetGlobalBound();
+  Bound3D const &myBound = self->GetGlobalBound();
   context->QueryInterior(myBound, nearbyObjects);
 
-  for (size_t i = 0; i < nearbyObjects.size(); ++i) {
-    ObjectT* other = nearbyObjects[i];
+  for (size_t i = 0; i < nearbyObjects.size(); ++i)
+  {
+    ObjectT *other = nearbyObjects[i];
     if (self == other)
       continue;
 
-    ComponentCollidable* otherCollidable = other->GetCollidable();
+    ComponentCollidable *otherCollidable = other->GetCollidable();
     if (!otherCollidable)
       continue;
 
     if (!solid && !otherCollidable->solid)
       continue;
 
-    ComponentBoundingBox* otherBoundingBox = other->GetBoundingBox();
+    ComponentBoundingBox *otherBoundingBox = other->GetBoundingBox();
     if (!otherBoundingBox->orientationVersion)
       continue;
 
@@ -107,20 +110,23 @@ void ComponentCollidable::CheckCollisions(ObjectT* self, UpdateState& state) {
     if (!other->CanCollide(self))
       continue;
 
-    ComponentMotion* otherMotion = other->GetMotion();
+    ComponentMotion *otherMotion = other->GetMotion();
     float otherSpeed = otherMotion ? otherMotion->speed : 0.0f;
 
     /* Don't bother if we're hardly moving. */
     if (mySpeed < 1e-4f && otherSpeed < 1e-4f)
       continue;
 
-    if (myBound.Overlaps(other->GetGlobalBound())) {
+    if (myBound.Overlaps(other->GetGlobalBound()))
+    {
       V3 contactNormal;
       bool collided = GetPhysicsEngine()->CheckCollision(self, other, &contactNormal);
 
-      if (collided) {
+      if (collided)
+      {
         /* Generic collision-resolution logic. */
-        if (solid && otherCollidable->solid) {
+        if (solid && otherCollidable->solid)
+        {
           ResolveCollision(self, other, contactNormal);
           ResolveCollision(other, self, -contactNormal);
         }
@@ -136,10 +142,10 @@ void ComponentCollidable::CheckCollisions(ObjectT* self, UpdateState& state) {
 }
 
 void ComponentCollidable::Collide(
-  ObjectT* self,
-  ObjectT* other,
-  Position const& pSelf,
-  Position const& pOther)
+    ObjectT *self,
+    ObjectT *other,
+    Position const &pSelf,
+    Position const &pOther)
 {
   self->OnCollide(self, other, pSelf, pOther);
 }
